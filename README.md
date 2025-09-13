@@ -56,7 +56,20 @@ pnpm run dev
 
 ## 🚀 Deploy
 
-### Vercel (Recomendado)
+### Render (Configurado)
+O projeto está configurado para deploy automático no Render:
+
+1. **Conecte o repositório GitHub ao Render**
+2. **Configure as variáveis de ambiente:**
+   ```
+   VITE_SUPABASE_URL=https://ooanifpzlqxlktlhpgam.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vYW5pZnB6bHF4bGt0bGhwZ2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjMyOTgsImV4cCI6MjA3MzA5OTI5OH0.O_C5gAuppQeiXnqmVqTUJiev05SiYgPvLd3qR8fdTPA
+   ```
+3. **Comandos de build:**
+   - Build Command: `pnpm install && pnpm run build`
+   - Publish Directory: `dist`
+
+### Vercel (Alternativo)
 ```bash
 # Instalar Vercel CLI
 npm i -g vercel
@@ -64,11 +77,6 @@ npm i -g vercel
 # Deploy
 vercel --prod
 ```
-
-### Render
-1. Conecte o repositório GitHub
-2. Configure as variáveis de ambiente
-3. Deploy automático
 
 ## 📁 Estrutura do Projeto
 

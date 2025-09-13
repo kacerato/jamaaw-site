@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: jamaaw-site
+    env: static
+    buildCommand: pnpm install && pnpm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_SUPABASE_URL
+        value: https://ooanifpzlqxlktlhpgam.supabase.co
+      - key: VITE_SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vYW5pZnB6bHF4bGt0bGhwZ2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MjMyOTgsImV4cCI6MjA3MzA5OTI5OH0.O_C5gAuppQeiXnqmVqTUJiev05SiYgPvLd3qR8fdTPA
+
