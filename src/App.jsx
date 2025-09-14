@@ -2,8 +2,11 @@ import { useState } from 'react'
 import { useAuth } from './hooks/useAuth.js'
 import Header from './components/Header.jsx'
 import Hero from './components/Hero.jsx'
+import SobreEmpresa from './components/SobreEmpresa.jsx'
 import MapaInterativo from './components/MapaInterativo.jsx'
 import FormularioSugestoes from './components/FormularioSugestoes.jsx'
+import Depoimentos from './components/Depoimentos.jsx'
+import ParceriasCertificacoes from './components/ParceriasCertificacoes.jsx'
 import BlogNoticias from './components/BlogNoticias.jsx'
 import GaleriaAntesDepois from './components/GaleriaAntesDepois.jsx'
 import Login from './components/Login.jsx'
@@ -63,11 +66,41 @@ function App() {
       </button>
 
       <main>
-        <Hero />
-        <MapaInterativo />
-        <FormularioSugestoes />
-        <GaleriaAntesDepois />
-        <BlogNoticias />
+        {/* Seção Início */}
+        <div id="inicio">
+          <Hero />
+        </div>
+        
+        {/* Seção Sobre */}
+        <div id="sobre">
+          <SobreEmpresa />
+        </div>
+        
+        {/* Seção Depoimentos */}
+        <Depoimentos />
+        
+        {/* Seção Parcerias */}
+        <ParceriasCertificacoes />
+        
+        {/* Seção Mapa - Agora separada */}
+        <div id="mapa">
+          <MapaInterativo />
+        </div>
+        
+        {/* Seção Sugestões - Agora separada */}
+        <div id="sugestoes">
+          <FormularioSugestoes />
+        </div>
+        
+        {/* Seção Galeria */}
+        <div id="galeria">
+          <GaleriaAntesDepois />
+        </div>
+        
+        {/* Seção Notícias */}
+        <div id="noticias">
+          <BlogNoticias />
+        </div>
         
         {/* Seção de teste da conexão - apenas para desenvolvimento */}
         {showTestConnection && (
@@ -85,7 +118,7 @@ function App() {
       </main>
       
       {/* Footer */}
-      <footer className="bg-black text-white py-12">
+      <footer id="contato" className="bg-black text-white py-12">
         <div className="jamaaw-container">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">

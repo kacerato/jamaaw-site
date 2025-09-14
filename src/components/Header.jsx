@@ -34,6 +34,12 @@ export default function Header() {
                 Início
               </a>
               <a
+                href="#sobre"
+                className="text-gray-600 hover:text-black px-3 py-2 text-sm font-medium transition-colors"
+              >
+                Sobre
+              </a>
+              <a
                 href="#mapa"
                 className="text-gray-600 hover:text-black px-3 py-2 text-sm font-medium transition-colors"
               >
@@ -105,6 +111,13 @@ export default function Header() {
               onClick={toggleMenu}
             >
               Início
+            </a>
+            <a
+              href="#sobre"
+              className="text-gray-600 hover:text-black block px-3 py-2 text-base font-medium"
+              onClick={toggleMenu}
+            >
+              Sobre
             </a>
             <a
               href="#mapa"
