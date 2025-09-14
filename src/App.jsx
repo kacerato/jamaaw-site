@@ -3,10 +3,12 @@ import { useAuth } from './hooks/useAuth.js'
 import Header from './components/Header.jsx'
 import Hero from './components/Hero.jsx'
 import SobreEmpresa from './components/SobreEmpresa.jsx'
+import TimelineProjetos from './components/TimelineProjetos.jsx'
 import MapaInterativo from './components/MapaInterativo.jsx'
 import FormularioSugestoes from './components/FormularioSugestoes.jsx'
 import Depoimentos from './components/Depoimentos.jsx'
 import ParceriasCertificacoes from './components/ParceriasCertificacoes.jsx'
+import FAQ from './components/FAQ.jsx'
 import BlogNoticias from './components/BlogNoticias.jsx'
 import GaleriaAntesDepois from './components/GaleriaAntesDepois.jsx'
 import Login from './components/Login.jsx'
@@ -76,6 +78,9 @@ function App() {
           <SobreEmpresa />
         </div>
         
+        {/* Seção Timeline */}
+        <TimelineProjetos />
+        
         {/* Seção Depoimentos */}
         <Depoimentos />
         
@@ -101,6 +106,9 @@ function App() {
         <div id="noticias">
           <BlogNoticias />
         </div>
+        
+        {/* Seção FAQ */}
+        <FAQ />
         
         {/* Seção de teste da conexão - apenas para desenvolvimento */}
         {showTestConnection && (
