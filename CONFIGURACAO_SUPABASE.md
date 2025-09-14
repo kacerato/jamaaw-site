@@ -68,15 +68,16 @@ Armazena informações sobre as ruas e seu status de limpeza:
 - `fotos_antes`: URLs das fotos antes da limpeza
 - `fotos_depois`: URLs das fotos depois da limpeza
 
-#### Tabela `sugestoes`
+#### Tabela `sugestoes_ruas`
 Armazena sugestões enviadas pelos usuários:
 - `id`: Identificador único
 - `nome_rua`: Nome da rua sugerida
 - `descricao`: Descrição da situação
-- `email_usuario`: Email do usuário que enviou
+- `email`: Email do usuário que enviou
 - `imagens`: URLs das imagens enviadas
-- `status`: Status da sugestão (pendente, aprovada, rejeitada)
-- `data_criacao`: Data de criação da sugestão
+- `aprovada`: Status da sugestão (TRUE para aprovada, FALSE para pendente)
+- `created_at`: Data de criação da sugestão
+- `processed_at`: Data de processamento da sugestão
 
 #### Tabela `noticias`
 Armazena posts do blog/notícias:
@@ -123,43 +124,48 @@ Para definir o email de administrador padrão:
 Execute os seguintes comandos SQL para configurar as políticas de segurança:
 
 ```sql
--- Habilitar RLS em todas as tabelas
+-- Políticas RLS (Row Level Security)
 ALTER TABLE ruas ENABLE ROW LEVEL SECURITY;
-ALTER TABLE sugestoes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE noticias ENABLE ROW LEVEL SECURITY;
-ALTER TABLE galeria ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sugestoes_ruas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE galeria_antes_depois ENABLE ROW LEVEL SECURITY;
+ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
 
--- Política para leitura pública das ruas
+-- Políticas para leitura pública
 CREATE POLICY "Ruas são visíveis publicamente" ON ruas
-  FOR SELECT USING (true);
+    FOR SELECT USING (true);
 
--- Política para administradores gerenciarem ruas
-CREATE POLICY "Admins podem gerenciar ruas" ON ruas
-  FOR ALL USING (auth.jwt() ->> 'email' = 'admin@jamaaw.com');
+CREATE POLICY "Posts publicados são visíveis publicamente" ON blog_posts
+    FOR SELECT USING (publicado = true);
 
--- Política para usuários criarem sugestões
-CREATE POLICY "Usuários podem criar sugestões" ON sugestoes
-  FOR INSERT WITH CHECK (true);
+CREATE POLICY "Galeria é visível publicamente" ON galeria_antes_depois
+    FOR SELECT USING (true);
 
--- Política para administradores gerenciarem sugestões
-CREATE POLICY "Admins podem gerenciar sugestões" ON sugestoes
-  FOR ALL USING (auth.jwt() ->> 'email' = 'admin@jamaaw.com');
+CREATE POLICY "Configurações são visíveis publicamente" ON configuracoes
+    FOR SELECT USING (true);
 
--- Política para leitura pública das notícias publicadas
-CREATE POLICY "Notícias publicadas são visíveis" ON noticias
-  FOR SELECT USING (publicado = true);
+-- Política para inserção de sugestões (público pode inserir)
+CREATE POLICY "Qualquer um pode inserir sugestões" ON sugestoes_ruas
+    FOR INSERT WITH CHECK (true);
 
--- Política para administradores gerenciarem notícias
-CREATE POLICY "Admins podem gerenciar notícias" ON noticias
-  FOR ALL USING (auth.jwt() ->> 'email' = 'admin@jamaaw.com');
+-- Políticas para administradores (usuários autenticados)
+CREATE POLICY "Administradores podem gerenciar ruas" ON ruas
+    FOR ALL USING (auth.role() = 'authenticated');
 
--- Política para leitura pública da galeria
-CREATE POLICY "Galeria é visível publicamente" ON galeria
-  FOR SELECT USING (true);
+CREATE POLICY "Administradores podem ver sugestões" ON sugestoes_ruas
+    FOR SELECT USING (auth.role() = 'authenticated');
 
--- Política para administradores gerenciarem galeria
-CREATE POLICY "Admins podem gerenciar galeria" ON galeria
-  FOR ALL USING (auth.jwt() ->> 'email' = 'admin@jamaaw.com');
+CREATE POLICY "Administradores podem atualizar sugestões" ON sugestoes_ruas
+    FOR UPDATE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Administradores podem gerenciar posts" ON blog_posts
+    FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Administradores podem gerenciar galeria" ON galeria_antes_depois
+    FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Administradores podem gerenciar configurações" ON configuracoes
+    FOR ALL USING (auth.role() = 'authenticated');
 ```
 
 ## 4. Configuração de Storage
@@ -170,26 +176,8 @@ CREATE POLICY "Admins podem gerenciar galeria" ON galeria
 2. Clique em **New Bucket**
 3. Crie os seguintes buckets:
 
-#### Bucket `imagens-ruas`
-- **Name**: `imagens-ruas`
-- **Public**: ✅ (marcado)
-- **File size limit**: 10 MB
-- **Allowed MIME types**: `image/jpeg,image/png,image/webp`
-
-#### Bucket `imagens-sugestoes`
-- **Name**: `imagens-sugestoes`
-- **Public**: ✅ (marcado)
-- **File size limit**: 5 MB
-- **Allowed MIME types**: `image/jpeg,image/png,image/webp`
-
-#### Bucket `imagens-noticias`
-- **Name**: `imagens-noticias`
-- **Public**: ✅ (marcado)
-- **File size limit**: 10 MB
-- **Allowed MIME types**: `image/jpeg,image/png,image/webp`
-
-#### Bucket `imagens-galeria`
-- **Name**: `imagens-galeria`
+#### Bucket `jamaaw-images`
+- **Name**: `jamaaw-images`
 - **Public**: ✅ (marcado)
 - **File size limit**: 10 MB
 - **Allowed MIME types**: `image/jpeg,image/png,image/webp`
@@ -199,17 +187,17 @@ CREATE POLICY "Admins podem gerenciar galeria" ON galeria
 Execute no SQL Editor:
 
 ```sql
--- Política para upload público de imagens de sugestões
-CREATE POLICY "Usuários podem fazer upload de imagens de sugestões" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'imagens-sugestoes');
+-- Política para upload de imagens (público pode fazer upload)
+CREATE POLICY "Qualquer um pode fazer upload de imagens" ON storage.objects
+    FOR INSERT WITH CHECK (bucket_id = 'jamaaw-images');
 
--- Política para leitura pública de todas as imagens
+-- Política para visualização de imagens (público pode ver)
 CREATE POLICY "Imagens são visíveis publicamente" ON storage.objects
-  FOR SELECT USING (bucket_id IN ('imagens-ruas', 'imagens-sugestoes', 'imagens-noticias', 'imagens-galeria'));
+    FOR SELECT USING (bucket_id = 'jamaaw-images');
 
--- Política para administradores gerenciarem todas as imagens
-CREATE POLICY "Admins podem gerenciar todas as imagens" ON storage.objects
-  FOR ALL USING (auth.jwt() ->> 'email' = 'admin@jamaaw.com');
+-- Política para administradores gerenciarem imagens
+CREATE POLICY "Administradores podem gerenciar imagens" ON storage.objects
+    FOR ALL USING (bucket_id = 'jamaaw-images' AND auth.role() = 'authenticated');
 ```
 
 ## 5. Configuração de Email
